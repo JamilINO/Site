@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuedaSegura - Home</title>
+    <style>
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+		
+		/* Estilos da Navbar */
+        .navbar {
+            width: 100%;
+            background-color: #1c1c1c; 
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .navbar .logo {
+            font-size: 1.5rem;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            transition: transform 0.3s, filter 0.3s;
+        }
+
+        .navbar .logo:hover {
+            transform: scale(1.05);
+            filter: brightness(1.2);
+        }
+
+        .navbar .menu {
+            list-style: none;
+            display: flex;
+        }
+
+        .navbar .menu li {
+            margin-left: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar .menu li:hover {
+            transform: scale(1.1);
+        }
+
+        .navbar .menu li a {
+            color: #ddd;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .navbar .menu li a:hover {
+            color: white;
+        }
+
+        /* Configuração de página */
+        body {
+            background: #f5f5f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+
+        header {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        header img {
+            width: 200px;
+            height: auto;
+            transition: transform 0.3s, filter 0.3s;
+        }
+
+        header img:hover {
+            transform: scale(1.05);
+            filter: brightness(1.2);
+        }
+
+        .content {
+            width: 100%;
+            max-width: 700px;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .content h2 {
+            color: #1c1c1c;
+            text-align: center;
+        }
+
+        .content form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        form label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        form input[type="email"],
+        form input[type="text"],
+        form input[type="mac_addr"],
+        form button,
+        form input[type="submit"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        form input[type="email"]:focus,
+        form input[type="text"]:focus,
+        form input[type="mac_addr"]:focus,
+        form button:hover,
+        form input[type="submit"]:hover {
+            border-color: #1c1c1c;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .content div {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .content div p,
+        .content div strong {
+            margin-bottom: 5px;
+        }
+
+        footer {
+            width: 100%;
+            background-color: #1c1c1c;
+            color: #ddd;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            position: fixed;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="#" class="logo">QuedaSegura</a>
+        <ul class="menu">
+            <li><a href="home.html">Home</a></li>
+            <li><a href="login.html">Login / Cadastro</a></li>
+        </ul>
+    </nav>
+	
+    <header>
+        <img src="logo.png" alt="Logo QuedaSegura">
+    </header>
+
+    <div class="content">
+        <h2>Bem-vindo {{ .user }}</h2>
+
+        <form action="/api/new_contact" method="post">
+            <label for="email">Novo e-mail para contato:</label>
+            <input type="email" name="email" id="email" required>
+            <button type="submit">Cadastrar</button>
+        </form>
+
+        <div>
+            {{ range .contacts }}
+                <strong>{{ .Id }}</strong>
+                <form action="/api/update_contact" method="post">
+                    <input type="hidden" name="contact_id" value="{{ .Id }}" required>
+                    <label for="email">Alterar Contato:</label>
+                    <input type="text" name="email" value="{{ .Email }}" required>
+                    <input type="submit" value="Alterar">
+                </form>
+                <form action="/api/delete_contact" method="post">
+                    <input type="hidden" name="contact_id" value="{{ .Id }}" required>
+                    <input type="submit" value="Excluir">
+                </form>
+            {{ end }}
+        </div>
+
+        <form action="/api/new_device" method="post">
+            <label for="device">Novo Dispositivo:</label>
+            <input type="mac_addr" name="mac_addr" id="mac_addr" required>
+            <button type="submit">Cadastrar</button>
+        </form>
+
+        <div>
+            {{ range .devices }}
+                <strong>{{ .Id }}</strong>
+                <p>MAC Address: {{ .MacAddr }}</p>
+                <form action="/api/update_device" method="post">
+                    <input type="hidden" name="device_id" value="{{ .Id }}" required>
+                    <label for="mac_addr">Alterar Dispositivo:</label>
+                    <input type="text" name="mac_addr" value="{{ .MacAddr }}" required>
+                    <input type="submit" value="Alterar">
+                </form>
+                <form action="/api/delete_device" method="post">
+                    <input type="hidden" name="device_id" value="{{ .Id }}" required>
+                    <input type="submit" value="Excluir">
+                </form>
+            {{ end }}
+        </div>
+    </div>
+	
+    <footer>Copyright &copy; QuedaSegura 2024. Todos os direitos reservados.</footer>
+
+</body>
+</html>
